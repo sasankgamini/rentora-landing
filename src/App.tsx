@@ -4,11 +4,28 @@ import { Building2, Users, MousePointerClick, ArrowRight, Menu, X, Home, UserPlu
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
 
-  const handleWaitlistSubmit = (e: React.FormEvent) => {
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thanks for joining our waitlist! We\'ll be in touch soon.');
-    setEmail('');
+  
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbyskiZVQQKv0Xrcxh69Vyo7v2w8toJlfoIefdhkXGpnaDqrH0wZbHT2Dky1LdkZ5M8/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email }),
+      });
+  
+      alert('Thanks for joining our waitlist!');
+      setName('');
+      setEmail('');
+    } catch (err) {
+      alert('Something went wrong.');
+      console.error(err);
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -81,13 +98,21 @@ function App() {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Find your perfect off-campus housing, connect with roommates, and apply with just one click.
           </p>
-          <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto flex gap-2">
+          <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto flex flex-col gap-3">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your Name"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              required
+            />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email to join the waitlist"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
             />
             <button
