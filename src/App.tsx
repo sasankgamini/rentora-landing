@@ -1,33 +1,123 @@
 import React, { useState } from 'react';
-import { Building2, Users, MousePointerClick, ArrowRight, Menu, X, Home, UserPlus, MessageSquare } from 'lucide-react';
+import { Building2, Users, MousePointerClick, Menu, X, Home, UserPlus, MessageSquare } from 'lucide-react';
+
+// Define types for the status objects
+interface FormStatus {
+  type: 'success' | 'error';
+  message: string;
+}
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  
+  // Waitlist form state
+  const [waitlistName, setWaitlistName] = useState('');
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [isWaitlistSubmitting, setIsWaitlistSubmitting] = useState(false);
+  const [waitlistStatus, setWaitlistStatus] = useState<FormStatus | null>(null);
+  
+  // Contact form state
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+  const [contactStatus, setContactStatus] = useState<FormStatus | null>(null);
 
+  // Google Apps Script endpoints
+  const WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyskiZVQQKv0Xrcxh69Vyo7v2w8toJlfoIefdhkXGpnaDqrH0wZbHT2Dky1LdkZ5M8/exec';
+  const CONTACT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwYzW7Bd7G7r_3wkNW070GhEQ4_Rp8thd0kUN_WsYEatTeb8fy4JOnxQz0WSmoKZMfm5Q/exec';
+
+  // Handle waitlist form submission
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsWaitlistSubmitting(true);
+    setWaitlistStatus(null);
   
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbyskiZVQQKv0Xrcxh69Vyo7v2w8toJlfoIefdhkXGpnaDqrH0wZbHT2Dky1LdkZ5M8/exec', {
+      // Create form data for waitlist submission
+      const formData = new FormData();
+      formData.append('name', waitlistName);
+      formData.append('email', waitlistEmail);
+      
+      // Send the request to waitlist endpoint
+      const response = await fetch(WAITLIST_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email }),
+        body: formData
       });
-  
-      alert('Thanks for joining our waitlist!');
-      setName('');
-      setEmail('');
+      
+      console.log('Waitlist submission status:', response.status);
+      
+      // Show success message
+      setWaitlistStatus({
+        type: 'success',
+        message: 'Thanks for joining our waitlist! We\'ll keep you updated.'
+      });
+      
+      // Clear form fields on success
+      setWaitlistName('');
+      setWaitlistEmail('');
     } catch (err) {
-      alert('Something went wrong.');
-      console.error(err);
+      console.error('Waitlist error:', err);
+      
+      // Show error message
+      setWaitlistStatus({
+        type: 'error',
+        message: 'Something went wrong with your submission. Please try again.'
+      });
+    } finally {
+      setIsWaitlistSubmitting(false);
     }
   };
 
+  // Contact form submission handler
+  // Handle contact form submission
+const handleContactSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsContactSubmitting(true);
+  setContactStatus(null);
+  
+  try {
+    // Create form data for contact submission
+    const formData = new FormData();
+    formData.append('name', contactName);
+    formData.append('email', contactEmail);
+    formData.append('message', contactMessage);
+    
+    // Send the request to contact endpoint
+    const response = await fetch(CONTACT_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      // Add mode: 'no-cors' to handle CORS issues with Google Apps Script
+      mode: 'no-cors'
+    });
+    
+    console.log('Contact form response status:', response.status);
+    
+    // When using no-cors mode, we can't access the response status
+    // Instead, assume success if we reached this point (no network error)
+    setContactStatus({
+      type: 'success',
+      message: 'Thank you for your message! We\'ll get back to you soon.'
+    });
+    
+    // Clear form fields on success
+    setContactName('');
+    setContactEmail('');
+    setContactMessage('');
+  } catch (err) {
+    console.error('Contact form error:', err);
+    
+    // Show error message
+    setContactStatus({
+      type: 'error',
+      message: 'Something went wrong sending your message. Please try again later.'
+    });
+  } finally {
+    setIsContactSubmitting(false);
+  }
+};
+
+  // Smooth scroll to section function
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -51,7 +141,7 @@ function App() {
               {['Features', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
+                  onClick={() => scrollToSection(item.toLowerCase().replace(' ', '-'))}
                   className="text-gray-600 hover:text-[#4B75B7] transition-colors"
                 >
                   {item}
@@ -64,6 +154,7 @@ function App() {
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-gray-600 hover:text-[#4B75B7]"
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -89,7 +180,7 @@ function App() {
         )}
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero Section with Waitlist Form */}
       <section className="pt-32 pb-20 px-4 bg-gradient-to-b from-[#4B75B7]/10 to-white">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
@@ -98,29 +189,45 @@ function App() {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Find your perfect off-campus housing, connect with roommates, and apply with just one click.
           </p>
+          
           <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto flex flex-col gap-3">
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={waitlistName}
+              onChange={(e) => setWaitlistName(e.target.value)}
               placeholder="Your Name"
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
             />
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
               placeholder="Enter your email to join the waitlist"
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
             />
             <button
               type="submit"
-              className="px-6 py-2 bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors"
+              disabled={isWaitlistSubmitting}
+              className="px-6 py-2 bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors disabled:bg-gray-400 flex items-center justify-center"
             >
-              Join Waitlist
+              {isWaitlistSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : 'Join Waitlist'}
             </button>
+            
+            {waitlistStatus && (
+              <div className={`p-3 rounded-lg mt-2 ${waitlistStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {waitlistStatus.message}
+              </div>
+            )}
           </form>
         </div>
       </section>
@@ -162,7 +269,7 @@ function App() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how it works" className="py-20 px-4 bg-[#4B75B7]/5">
+      <section id="how-it-works" className="py-20 px-4 bg-[#4B75B7]/5">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -230,38 +337,75 @@ function App() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Section - With dedicated endpoint */}
       <section id="contact" className="py-20 px-4 bg-[#4B75B7]/5">
-        <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-8">Get in Touch</h2>
-          <p className="text-gray-600 mb-8">
+        <div className="max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold mb-8 text-center">Get in Touch</h2>
+          <p className="text-gray-600 mb-8 text-center">
             Have questions about Rentora? We're here to help you find your perfect student housing solution.
           </p>
-          <form className="space-y-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
-              required
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
-              required
-            />
-            <textarea
-              placeholder="Your Message"
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
-              required
-            ></textarea>
+          
+          <form onSubmit={handleContactSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
+            <div>
+              <label htmlFor="contactName" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input
+                id="contactName"
+                type="text"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="Your Name"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                id="contactEmail"
+                type="email"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="Your Email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="contactMessage" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea
+                id="contactMessage"
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Your Message"
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+                required
+              ></textarea>
+            </div>
+            
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors"
+              disabled={isContactSubmitting}
+              className="w-full px-6 py-3 bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors disabled:bg-gray-400 flex items-center justify-center"
             >
-              Send Message
+              {isContactSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Sending...
+                </>
+              ) : 'Send Message'}
             </button>
+            
+            {contactStatus && (
+              <div className={`p-3 rounded-lg ${contactStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {contactStatus.message}
+              </div>
+            )}
           </form>
         </div>
       </section>
