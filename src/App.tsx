@@ -40,27 +40,43 @@ function App() {
     e.preventDefault();
     setIsWaitlistSubmitting(true);
     setWaitlistStatus(null);
+    
     try {
-      const formData = new FormData();
-      formData.append('name', waitlistName);
-      formData.append('email', waitlistEmail);
-
-      await fetch(WAITLIST_ENDPOINT, {
+      // Validate inputs
+      if (!waitlistName.trim() || !waitlistEmail.trim()) {
+        throw new Error('Name and email are required');
+      }
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(waitlistEmail)) {
+        throw new Error('Please enter a valid email address');
+      }
+      
+      const response = await fetch(WAITLIST_ENDPOINT, {
         method: 'POST',
-        body: formData,
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: waitlistName, email: waitlistEmail }),
       });
-
+      
+      // Since no-cors doesn't return useful status, we assume success here
       setWaitlistStatus({
         type: 'success',
-        message: "Thanks for joining our waitlist! We'll keep you updated.",
+        message: 'Thanks for joining our waitlist! We\'ll be in touch soon.',
       });
+      
+      // Clear form on success
       setWaitlistName('');
       setWaitlistEmail('');
+      
     } catch (err) {
-      console.error(err);
+      console.error('Waitlist submission error:', err);
       setWaitlistStatus({
         type: 'error',
-        message: 'Something went wrong. Please try again.',
+        message: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
       });
     } finally {
       setIsWaitlistSubmitting(false);
@@ -178,6 +194,7 @@ function App() {
               placeholder="Your Name"
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
+              disabled={isWaitlistSubmitting}
             />
             <input
               type="email"
@@ -186,6 +203,7 @@ function App() {
               placeholder="School or Work Email"
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
+              disabled={isWaitlistSubmitting}
             />
             <button
               type="submit"
