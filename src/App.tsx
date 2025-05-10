@@ -131,7 +131,7 @@ function App() {
           <div className="flex justify-between h-16 items-center">
             <div className="text-2xl font-bold text-[#4B75B7]">Rentora</div>
             <div className="hidden md:flex space-x-8">
-              {['Features', 'How It Works', 'FAQ', 'Contact'].map((item) => (
+              {['Students', 'Owners', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() =>
@@ -157,7 +157,7 @@ function App() {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {['Features', 'How It Works', 'FAQ', 'Contact'].map((item) => (
+              {['Students', 'Owners', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() =>
@@ -250,14 +250,14 @@ function App() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-20 px-4 bg-white">
+      {/* Students Section */}
+      <section id="students" className="py-20 px-4 bg-gradient-to-b from-[#4B75B7]/5 to-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Why Choose Rentora?
+            For Students
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-lg bg-white shadow-lg">
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
               <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
                 <Building2 className="text-[#4B75B7]" size={24} />
               </div>
@@ -268,7 +268,7 @@ function App() {
                 sublease from other students in your area.
               </p>
             </div>
-            <div className="p-6 rounded-lg bg-white shadow-lg">
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
               <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
                 <Users className="text-[#4B75B7]" size={24} />
               </div>
@@ -279,7 +279,7 @@ function App() {
                 your next best friend.
               </p>
             </div>
-            <div className="p-6 rounded-lg bg-white shadow-lg">
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
               <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
                 <MousePointerClick className="text-[#4B75B7]" size={24} />
               </div>
@@ -289,6 +289,44 @@ function App() {
               <p className="text-gray-600">
                 We help generate all your application paperwork, allowing you
                 to apply to multiple properties with a single click.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Owners Section */}
+      <section id="owners" className="py-20 px-4 bg-gradient-to-b from-white to-[#4B75B7]/5">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">
+            For Property Owners
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
+              <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
+                <Users className="text-[#4B75B7]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Verified Tenants</h3>
+              <p className="text-gray-600">
+                Access a pool of pre-verified student tenants with complete profiles and academic verification.
+              </p>
+            </div>
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
+              <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
+                <MousePointerClick className="text-[#4B75B7]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Streamlined Process</h3>
+              <p className="text-gray-600">
+                Manage applications, view tenant history, and handle lease agreements all in one platform.
+              </p>
+            </div>
+            <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
+              <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
+                <Building2 className="text-[#4B75B7]" size={24} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Property Visibility</h3>
+              <p className="text-gray-600">
+                Get your properties in front of the right students with targeted campus-area listings.
               </p>
             </div>
           </div>
