@@ -21,6 +21,7 @@ function App() {
   // Waitlist form state
   const [waitlistName, setWaitlistName] = useState('');
   const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistUserType, setWaitlistUserType] = useState('');
   const [isWaitlistSubmitting, setIsWaitlistSubmitting] = useState(false);
   const [waitlistStatus, setWaitlistStatus] = useState<FormStatus | null>(null);
 
@@ -32,7 +33,7 @@ function App() {
   const [contactStatus, setContactStatus] = useState<FormStatus | null>(null);
 
   const WAITLIST_ENDPOINT =
-    'https://script.google.com/macros/s/AKfycbyskiZVQQKv0Xrcxh69Vyo7v2w8toJlfoIefdhkXGpnaDqrH0wZbHT2Dky1LdkZ5M8/exec';
+    'https://script.google.com/macros/s/AKfycbyaiqr_G_qMKjl6n994S9No1ibvkVwqhd-G9ZH4B71VYzOP_-kZham8exZCUqM4y5A/exec';
   const CONTACT_ENDPOINT =
     'https://script.google.com/macros/s/AKfycbwYzW7Bd7G7r_3wkNW070GhEQ4_Rp8thd0kUN_WsYEatTeb8fy4JOnxQz0WSmoKZMfm5Q/exec';
 
@@ -59,7 +60,11 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: waitlistName, email: waitlistEmail }),
+        body: JSON.stringify({ 
+          name: waitlistName, 
+          email: waitlistEmail, 
+          role: waitlistUserType 
+        }),
       });
       
       // Since no-cors doesn't return useful status, we assume success here
@@ -71,6 +76,7 @@ function App() {
       // Clear form on success
       setWaitlistName('');
       setWaitlistEmail('');
+      setWaitlistUserType('');
       
     } catch (err) {
       console.error('Waitlist submission error:', err);
@@ -201,6 +207,15 @@ function App() {
               value={waitlistEmail}
               onChange={(e) => setWaitlistEmail(e.target.value)}
               placeholder="School or Work Email"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              required
+              disabled={isWaitlistSubmitting}
+            />
+            <input
+              type="text"
+              value={waitlistUserType}
+              onChange={(e) => setWaitlistUserType(e.target.value)}
+              placeholder="Student or Landlord"
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
               required
               disabled={isWaitlistSubmitting}
