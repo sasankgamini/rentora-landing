@@ -211,15 +211,17 @@ function App() {
               required
               disabled={isWaitlistSubmitting}
             />
-            <input
-              type="text"
+            <select
               value={waitlistUserType}
               onChange={(e) => setWaitlistUserType(e.target.value)}
-              placeholder="Student or Landlord"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] bg-white text-gray-400"
               required
               disabled={isWaitlistSubmitting}
-            />
+            >
+              <option value="">Student or Landlord</option>
+              <option value="Student">Student</option>
+              <option value="Landlord">Landlord</option>
+            </select>
             <button
               type="submit"
               disabled={isWaitlistSubmitting}
