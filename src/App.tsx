@@ -214,11 +214,11 @@ function App() {
             <select
               value={waitlistUserType}
               onChange={(e) => setWaitlistUserType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] bg-white text-gray-400"
+              className={`px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] bg-white font-normal ${waitlistUserType ? 'text-gray-900' : 'text-gray-400'}`}
               required
               disabled={isWaitlistSubmitting}
             >
-              <option value="">Student or Landlord</option>
+              <option value="" disabled>Student or Landlord</option>
               <option value="Student">Student</option>
               <option value="Landlord">Landlord</option>
             </select>
