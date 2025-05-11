@@ -137,7 +137,7 @@ function App() {
           <div className="flex justify-between h-16 items-center">
             <div className="text-2xl font-bold text-[#4B75B7]">Rentora</div>
             <div className="hidden md:flex space-x-8">
-              {['Owners', 'Students', 'How It Works', 'FAQ', 'Contact'].map((item) => (
+              {['Landlords', 'Students', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() =>
@@ -163,7 +163,7 @@ function App() {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {['Owners', 'Students', 'How It Works', 'FAQ', 'Contact'].map((item) => (
+              {['Landlords', 'Students', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() =>
@@ -198,7 +198,7 @@ function App() {
               value={waitlistName}
               onChange={(e) => setWaitlistName(e.target.value)}
               placeholder="Your Name"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              className="w-full h-12 px-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] font-normal"
               required
               disabled={isWaitlistSubmitting}
             />
@@ -207,14 +207,14 @@ function App() {
               value={waitlistEmail}
               onChange={(e) => setWaitlistEmail(e.target.value)}
               placeholder="School or Work Email"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7]"
+              className="w-full h-12 px-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] font-normal"
               required
               disabled={isWaitlistSubmitting}
             />
             <select
               value={waitlistUserType}
               onChange={(e) => setWaitlistUserType(e.target.value)}
-              className={`px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] bg-white font-normal ${waitlistUserType ? 'text-gray-900' : 'text-gray-400'}`}
+              className={`w-full h-12 px-4 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4B75B7] bg-white font-normal appearance-none ${waitlistUserType ? 'text-gray-900' : 'text-gray-400'}`}
               required
               disabled={isWaitlistSubmitting}
             >
@@ -225,7 +225,7 @@ function App() {
             <button
               type="submit"
               disabled={isWaitlistSubmitting}
-              className="px-6 py-2 bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors disabled:bg-gray-400 flex items-center justify-center"
+              className="w-full h-12 px-4 text-base bg-[#4B75B7] text-white rounded-lg hover:bg-[#4B75B7]/90 transition-colors disabled:bg-gray-400 flex items-center justify-center"
             >
               {isWaitlistSubmitting ? (
                 <svg
@@ -267,11 +267,11 @@ function App() {
         </div>
       </section>
 
-      {/* Owners Section */}
-      <section id="owners" className="py-20 px-4 bg-gradient-to-b from-[#4B75B7]/5 to-white">
+      {/* Landlords Section */}
+      <section id="landlords" className="py-20 px-4 bg-gradient-to-b from-[#4B75B7]/5 to-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            For Property Owners
+            For Landlords
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
