@@ -32,6 +32,22 @@ function App() {
   const [isContactSubmitting, setIsContactSubmitting] = useState(false);
   const [contactStatus, setContactStatus] = useState<FormStatus | null>(null);
 
+  // Login modal state
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginStatus, setLoginStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Sign up modal state
+  const [showSignup, setShowSignup] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [signupRole, setSignupRole] = useState<'student' | 'landlord'>('student');
+  const [signupStatus, setSignupStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isSigningUp, setIsSigningUp] = useState(false);
+
   const WAITLIST_ENDPOINT =
     'https://script.google.com/macros/s/AKfycbyaiqr_G_qMKjl6n994S9No1ibvkVwqhd-G9ZH4B71VYzOP_-kZham8exZCUqM4y5A/exec';
   const CONTACT_ENDPOINT =
@@ -123,6 +139,58 @@ function App() {
     }
   };
 
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setLoginStatus(null);
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setLoginStatus({ type: 'success', message: `Welcome, ${data.user.name} (${data.user.role})!` });
+        // Optionally close modal or redirect here
+        setTimeout(() => setShowLogin(false), 1000);
+      } else {
+        setLoginStatus({ type: 'error', message: data.error || 'Login failed' });
+      }
+    } catch {
+      setLoginStatus({ type: 'error', message: 'Login failed' });
+    }
+    setIsLoggingIn(false);
+  };
+
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSigningUp(true);
+    setSignupStatus(null);
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: signupEmail,
+          password: signupPassword,
+          name: signupName,
+          role: signupRole,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSignupStatus({ type: 'success', message: 'Sign up successful! You can now log in.' });
+        setTimeout(() => setShowSignup(false), 1200);
+      } else {
+        setSignupStatus({ type: 'error', message: data.error || 'Sign up failed' });
+      }
+    } catch {
+      setSignupStatus({ type: 'error', message: 'Sign up failed' });
+    }
+    setIsSigningUp(false);
+  };
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -136,7 +204,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="text-2xl font-bold text-[#4B75B7]">Rentora</div>
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden md:flex space-x-8 items-center">
               {['Landlords', 'Students', 'How It Works', 'FAQ', 'Contact'].map((item) => (
                 <button
                   key={item}
@@ -148,14 +216,43 @@ function App() {
                   {item}
                 </button>
               ))}
+              {/* Login button */}
+              <button
+                onClick={() => setShowLogin(true)}
+                className="ml-4 px-4 py-2 bg-[#4B75B7] text-white rounded-lg hover:bg-[#3a5c8c] transition-colors"
+              >
+                Login
+              </button>
+              {/* Sign Up button */}
+              <button
+                onClick={() => setShowSignup(true)}
+                className="ml-2 px-4 py-2 border border-[#4B75B7] text-[#4B75B7] rounded-lg hover:bg-[#eaf1fb] transition-colors"
+              >
+                Sign Up
+              </button>
             </div>
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center">
+              {/* ...existing mobile menu button... */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-gray-600 hover:text-[#4B75B7]"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+              {/* Mobile login button */}
+              <button
+                onClick={() => setShowLogin(true)}
+                className="ml-2 px-3 py-1 bg-[#4B75B7] text-white rounded-lg"
+              >
+                Login
+              </button>
+              {/* Mobile sign up button */}
+              <button
+                onClick={() => setShowSignup(true)}
+                className="ml-2 px-3 py-1 border border-[#4B75B7] text-[#4B75B7] rounded-lg"
+              >
+                Sign Up
               </button>
             </div>
           </div>
@@ -178,6 +275,116 @@ function App() {
           </div>
         )}
       </nav>
+
+      {/* Login Modal */}
+      {showLogin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowLogin(false)}
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-center">Login</h2>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full px-4 py-2 border rounded"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-2 border rounded"
+                value={loginPassword}
+                onChange={e => setLoginPassword(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="w-full py-2 bg-[#4B75B7] text-white rounded hover:bg-[#3a5c8c]"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? 'Logging in...' : 'Login'}
+              </button>
+              {loginStatus && (
+                <div className={`p-2 rounded text-center ${loginStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {loginStatus.message}
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Sign Up Modal */}
+      {showSignup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowSignup(false)}
+              aria-label="Close"
+            >
+              {/* X icon */}
+              <svg width="20" height="20" fill="none" stroke="currentColor"><path d="M6 6l8 8M6 14L14 6" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-center">Sign Up</h2>
+            <form onSubmit={handleSignupSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Name"
+                className="w-full px-4 py-2 border rounded"
+                value={signupName}
+                onChange={e => setSignupName(e.target.value)}
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full px-4 py-2 border rounded"
+                value={signupEmail}
+                onChange={e => setSignupEmail(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-2 border rounded"
+                value={signupPassword}
+                onChange={e => setSignupPassword(e.target.value)}
+                required
+              />
+              <select
+                className="w-full px-4 py-2 border rounded"
+                value={signupRole}
+                onChange={e => setSignupRole(e.target.value as 'student' | 'landlord')}
+                required
+              >
+                <option value="student">Student</option>
+                <option value="landlord">Landlord</option>
+              </select>
+              <button
+                type="submit"
+                className="w-full py-2 bg-[#4B75B7] text-white rounded hover:bg-[#3a5c8c]"
+                disabled={isSigningUp}
+              >
+                {isSigningUp ? 'Signing up...' : 'Sign Up'}
+              </button>
+              {signupStatus && (
+                <div className={`p-2 rounded text-center ${signupStatus.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {signupStatus.message}
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Hero / Waitlist */}
       <section className="pt-32 pb-20 px-4 bg-gradient-to-b from-[#4B75B7]/10 to-white">
