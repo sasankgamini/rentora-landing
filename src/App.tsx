@@ -271,14 +271,14 @@ function App() {
       <section id="landlords" className="py-20 px-4 bg-gradient-to-b from-[#4B75B7]/5 to-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
-            For Landlords
+            For Student Lessors & Landlords
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-6 rounded-lg bg-white shadow-lg border border-gray-100">
               <div className="w-12 h-12 bg-[#4B75B7]/10 rounded-lg flex items-center justify-center mb-4">
                 <Users className="text-[#4B75B7]" size={24} />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Verified Tenants</h3>
+              <h3 className="text-xl font-semibold mb-2">Verified Student Tenants</h3>
               <p className="text-gray-600">
                 Access a pool of pre-verified student tenants with complete profiles and academic verification.
               </p>
